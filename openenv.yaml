@@ -1,0 +1,26 @@
+spec_version: 1
+name: desk_ops_env
+type: space
+runtime: fastapi
+app: desk_ops_env.server.app:app
+port: 8000
+metadata:
+  display_name: DeskOps RL Mini-Game
+  summary: "Multi-task assistant environment covering inbox triage, calendar allocation, and launch orchestration."
+  tags:
+    - operations
+    - planning
+    - scheduling
+  tasks:
+    - id: inbox_triage
+      difficulty: easy
+      description: Label urgent emails with the correct response plan.
+    - id: calendar_allocation
+      difficulty: medium
+      description: Schedule meetings without violating staffing rules.
+    - id: launch_board
+      difficulty: hard
+      description: Advance launch cards through kanban and lock owners.
+    - id: vendor_negotiation
+      difficulty: expert
+      description: Balance vendor approvals against spend caps and compliance.

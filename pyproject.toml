@@ -1,0 +1,21 @@
+[project]
+name = "desk-ops-env"
+version = "0.1.0"
+description = "DeskOps mini-game environment for OpenEnv"
+authors = [{name = "Meta Hackathon Team"}]
+dependencies = [
+    "openenv @ git+https://github.com/meta-pytorch/OpenEnv@main",
+    "fastapi>=0.110",
+    "uvicorn>=0.23",
+    "pydantic>=2.6",
+    "openai>=1.14",
+    "torch>=2.2",
+]
+requires-python = ">=3.10"
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+
+[tool.pytest.ini_options]
+addopts = "-q"
+pythonpath = ["."]

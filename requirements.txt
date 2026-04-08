@@ -1,0 +1,7 @@
+openenv @ git+https://github.com/meta-pytorch/OpenEnv@main
+fastapi>=0.110
+uvicorn>=0.23
+pydantic>=2.6
+openai>=1.14
+pytest>=8.0
+torch>=2.2
