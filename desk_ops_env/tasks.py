@@ -18,6 +18,10 @@ def _bounded(score: float) -> float:
     return score
 
 
+def _bound_breakdown(values: Dict[str, float]) -> Dict[str, float]:
+    return {key: _bounded(val) for key, val in values.items()}
+
+
 @dataclass
 class ActionOutcome:
     changed: bool
@@ -157,6 +161,7 @@ def _inbox_score(state: Dict) -> GraderResult:
         "sequence": sequence_score,
         "sla_focus": sla_score,
     }
+    breakdown = _bound_breakdown(breakdown)
     if sequence_score < 1.0 and history:
         pending.append("Handle highest-priority emails first.")
     return GraderResult(score=score, breakdown=breakdown, pending=pending)
@@ -269,6 +274,7 @@ def _calendar_score(state: Dict) -> GraderResult:
         "scheduling": score_assign,
         "budget_efficiency": normalized_cost,
     }
+    breakdown = _bound_breakdown(breakdown)
     return GraderResult(score=score, breakdown=breakdown, pending=pending)
 
 
@@ -396,6 +402,7 @@ def _board_score(state: Dict) -> GraderResult:
         "owner_alignment": owner_alignment,
         "dependency_health": dependency_score,
     }
+    breakdown = _bound_breakdown(breakdown)
     return GraderResult(score=score, breakdown=breakdown, pending=pending)
 
 
@@ -483,12 +490,14 @@ def _vendor_score(state: Dict) -> GraderResult:
             pending.append(f"{vendor['id']} exceeds its ceiling.")
     return GraderResult(
         score=overall,
-        breakdown={
-            "overall": overall,
-            "budget": budget_score,
-            "compliance": compliance_score,
-            "pipeline_diversity": diversification,
-        },
+        breakdown=_bound_breakdown(
+            {
+                "overall": overall,
+                "budget": budget_score,
+                "compliance": compliance_score,
+                "pipeline_diversity": diversification,
+            }
+        ),
         pending=pending,
     )
 
