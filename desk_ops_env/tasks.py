@@ -6,6 +6,17 @@ from typing import Callable, Dict, List, Tuple
 
 from .models import DeskAction, DeskActionType, TaskDifficulty
 
+BOUND_EPSILON = 1e-3
+
+
+def _bounded(score: float) -> float:
+    """Clamp grader scores to the OpenEnv allowed range (0, 1)."""
+    if score <= 0.0:
+        return BOUND_EPSILON
+    if score >= 1.0:
+        return 1.0 - BOUND_EPSILON
+    return score
+
 
 @dataclass
 class ActionOutcome:
@@ -139,7 +150,7 @@ def _inbox_score(state: Dict) -> GraderResult:
     )
     sla_total = sum(1 for email in state["emails"] if email["sla_minutes"] <= 30) or 1
     sla_score = sla_hits / sla_total
-    score = 0.6 * label_score + 0.2 * sequence_score + 0.2 * sla_score
+    score = _bounded(0.6 * label_score + 0.2 * sequence_score + 0.2 * sla_score)
     breakdown = {
         "overall": score,
         "labels": label_score,
@@ -252,7 +263,7 @@ def _calendar_score(state: Dict) -> GraderResult:
     score_assign = matches / total if total else 0.0
     budget_cost = sum(entry["cost"] for entry in state.get("audit_log", []))
     normalized_cost = max(0.0, 1.0 - max(0.0, budget_cost - 3.5) * 0.1)
-    score = 0.7 * score_assign + 0.3 * normalized_cost
+    score = _bounded(0.7 * score_assign + 0.3 * normalized_cost)
     breakdown = {
         "overall": score,
         "scheduling": score_assign,
@@ -378,7 +389,7 @@ def _board_score(state: Dict) -> GraderResult:
     stage_alignment = stage_hits / total_cards
     owner_alignment = owner_hits / total_cards
     dependency_score = dependency_hits / total_cards
-    score = 0.4 * stage_alignment + 0.4 * owner_alignment + 0.2 * dependency_score
+    score = _bounded(0.4 * stage_alignment + 0.4 * owner_alignment + 0.2 * dependency_score)
     breakdown = {
         "overall": score,
         "stage_alignment": stage_alignment,
@@ -463,7 +474,7 @@ def _vendor_score(state: Dict) -> GraderResult:
     )
     compliance_score = compliance_hits / len(state["vendors"])
     diversification = len({v["stage"] for v in state["vendors"]}) / 3
-    overall = 0.5 * budget_score + 0.3 * compliance_score + 0.2 * diversification
+    overall = _bounded(0.5 * budget_score + 0.3 * compliance_score + 0.2 * diversification)
     pending = []
     if spend > state["spend_cap"]:
         pending.append("Reduce approvals or increase discounts to stay within spend cap.")
