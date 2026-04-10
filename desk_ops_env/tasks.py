@@ -6,7 +6,7 @@ from typing import Callable, Dict, List, Tuple
 
 from .models import DeskAction, DeskActionType, TaskDifficulty
 
-BOUND_EPSILON = 1e-3
+BOUND_EPSILON = 1e-2
 
 
 def _bounded(score: float) -> float:
