@@ -6,15 +6,16 @@ from typing import Callable, Dict, List, Tuple
 
 from .models import DeskAction, DeskActionType, TaskDifficulty
 
-BOUND_EPSILON = 1e-2
+MIN_SCORE = 0.05
+MAX_SCORE = 0.95
 
 
 def _bounded(score: float) -> float:
-    """Clamp grader scores to the OpenEnv allowed range (0, 1)."""
-    if score <= 0.0:
-        return BOUND_EPSILON
-    if score >= 1.0:
-        return 1.0 - BOUND_EPSILON
+    """Clamp grader scores to the strictly open interval (0, 1)."""
+    if score <= MIN_SCORE:
+        return MIN_SCORE
+    if score >= MAX_SCORE:
+        return MAX_SCORE
     return score
 
 
